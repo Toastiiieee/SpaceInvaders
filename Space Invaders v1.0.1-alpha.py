@@ -73,6 +73,8 @@ def initiate_game():
     global move_time
     global shipX
     global shipY
+    global lose_condition
+    lose_condition = 0
     shipX = 400
     shipY = 700
     move_time = time.time_ns()
@@ -143,6 +145,7 @@ enemies = [[140, 100],
 
 
 right_moves = 0
+lose_condition = 0
 moving_right = True
 enemy_speed = 1000000000
 
@@ -161,23 +164,25 @@ while True:
     c.bind_all("<KeyPress>", keyboardDown)
     c.bind_all("<KeyRelease>", keyboardUp)
 
-    if len(enemies) != 0:
+    if len(enemies) != 0 and lose_condition < 15:
         for p in enemies:
             spawn_enemy(p[0], p[1])
         if time.time_ns() - move_time >= enemy_speed:
-            if right_moves == 6:
+            if right_moves == 4:
                 moving_right = False
-            if right_moves == -6:
+                lose_condition += 1
+            if right_moves == -4:
                 moving_right = True
+                lose_condition += 1
             for p in enemies:
-                if right_moves < 6 and moving_right:
-                    if right_moves == -6:
+                if right_moves < 4 and moving_right:
+                    if right_moves == -4:
                         p[1] += 15
                         enemy_speed -= 5000000
                     else:
                         p[0] += 5
-                elif right_moves > -6 and moving_right is not True:
-                    if right_moves == 6:
+                elif right_moves > -4 and moving_right is not True:
+                    if right_moves == 4:
                         p[1] += 15
                         enemy_speed -= 5000000
                     else:
